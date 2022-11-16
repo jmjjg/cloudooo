@@ -32,8 +32,8 @@
 import mimetypes
 from mimetypes import guess_type, guess_extension
 from base64 import encodestring, decodestring
-from zope.interface import implements
-from interfaces.manager import IManager, IERP5Compatibility
+from zope.interface import implementer
+from .interfaces.manager import IManager, IERP5Compatibility
 from cloudooo.util import logger, parseContentType
 from cloudooo.interfaces.granulate import ITableGranulator
 from cloudooo.interfaces.granulate import IImageGranulator
@@ -94,10 +94,10 @@ def BBB_guess_extension(mimetype, title=None):
     "image/jpeg": ".jpg",
   }.get(parseContentType(mimetype).gettype(), None) or guess_extension(mimetype)
 
+@implementer(IManager, IERP5Compatibility, ITableGranulator, IImageGranulator,
+                          ITextGranulator)
 class Manager(object):
   """Manipulates requisitons of client and temporary files in file system."""
-  implements(IManager, IERP5Compatibility, ITableGranulator, IImageGranulator,
-             ITextGranulator)
 
   def __init__(self, path_tmp_dir, **kw):
     """Need pass the path where the temporary document will be created."""
@@ -159,7 +159,7 @@ class Manager(object):
                             source_format,
                             **self.kw)
     metadata_dict = dict([(key.capitalize(), value) \
-                        for key, value in metadata_dict.iteritems()])
+                        for key, value in metadata_dict.items()])
     decode_data = handler.setMetadata(metadata_dict)
     return encodestring(decode_data)
 
@@ -244,7 +244,7 @@ class Manager(object):
           handler_dict[split_entry[2]] = [split_entry[1]]
 
     output_mimetype_set = set()
-    for handler, mimetype_filter_list in handler_dict.items():
+    for handler, mimetype_filter_list in list(handler_dict.items()):
       for output_mimetype in self.handler_dict[handler].getAllowedConversionFormatList(source_mimetype):
         for mimetype_filter in mimetype_filter_list:
           if fnmatch(output_mimetype[0], mimetype_filter):
@@ -274,7 +274,7 @@ class Manager(object):
       response_dict['mime'] = response_dict['meta']['MIMEType']
       del response_dict['meta']['Data']
       return (200, response_dict, "")
-    except Exception, e:
+    except Exception as e:
       import traceback;
       logger.error(traceback.format_exc())
       return (402, {}, e.args[0])
@@ -291,7 +291,7 @@ class Manager(object):
     try:
       response_dict['data'] = self.updateFileMetadata(data, extension, meta)
       return (200, response_dict, '')
-    except Exception, e:
+    except Exception as e:
       import traceback;
       logger.error(traceback.format_exc())
       return (402, {}, e.args[0])
@@ -311,7 +311,7 @@ class Manager(object):
       # we use 'Title'"
       response_dict['meta']['title'] = response_dict['meta']['Title']
       return (200, response_dict, '')
-    except Exception, e:
+    except Exception as e:
       import traceback;
       logger.error('run_getmetadata: ' + traceback.format_exc())
       return (402, {}, e.args[0])
@@ -353,7 +353,7 @@ class Manager(object):
         response_dict['mime'] = mimetypes.types_map.get('.%s' % extension,
             mimetypes.types_map.get('.%s' % extension.split('.')[-1]))
       return (200, response_dict, "")
-    except Exception, e:
+    except Exception as e:
       import traceback;
       logger.error(traceback.format_exc())
       return (402, response_dict, str(e))
@@ -373,7 +373,7 @@ class Manager(object):
           extension_list.append((ext.lstrip('.'), t))
       response_dict['response_data'] = extension_list
       return (200, response_dict, '')
-    except Exception, e:
+    except Exception as e:
       logger.error(e)
       return (402, {}, e.args[0])
 

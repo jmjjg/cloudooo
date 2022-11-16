@@ -25,6 +25,13 @@ RUN apt update \
         python-zope.interface=4.7.1-1 \
         python2.7=2.7.18-1~20.04.3 \
         python2.7-dev=2.7.18-1~20.04.3 \
+        python3-libxml2=2.9.10+dfsg-5ubuntu0.20.04.4 \
+        python3-lxml=4.5.0-1ubuntu0.5 \
+        python3-psutil=5.5.1-1ubuntu4 \
+        python3-setuptools=45.2.0-1 \
+        python3-zope.interface=4.7.1-1 \
+        python3.8=3.8.10-0ubuntu1~20.04.5 \
+        python3.8-dev=3.8.10-0ubuntu1~20.04.5 \
         ttf-mscorefonts-installer=3.7ubuntu6 \
         wget=1.20.3-1ubuntu2 \
     && rm -r /var/lib/apt/lists/* \
@@ -35,6 +42,7 @@ COPY ./docker/etc/cloudooo.conf /etc/cloudooo.conf
 
 WORKDIR /opt/cloudooo/
 
-RUN python2 setup.py install
+#RUN python2 setup.py install
+RUN python3 setup.py install
 
 CMD /usr/local/bin/paster serve /etc/cloudooo.conf --daemon --pid-file /var/run/cloudooo.pid --log-file=/var/log/cloudooo.log && tail -f /var/log/cloudooo.log

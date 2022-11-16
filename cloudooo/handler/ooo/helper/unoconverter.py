@@ -32,7 +32,7 @@
 import sys
 import csv
 import codecs
-import helper_util
+from helper_util import getServiceManager
 from unohelper import systemPathToFileUrl
 from os.path import dirname, splitext
 from tempfile import mktemp
@@ -118,12 +118,12 @@ class UnoDocument(object):
     elif filter_name == "impress_pdf_Export":
       property = PropertyValue('FilterData', 0,
                        uno.Any('[]com.sun.star.beans.PropertyValue',
-                       (PropertyValue('ExportNotesPages', 0, True, 0),
-                       PropertyValue('SelectPdfVersion', 0, 1, 0),),), 0)
-    elif "pdf_Export" in filter_name :
-      property = PropertyValue('FilterData', 0,
+                      (PropertyValue('ExportNotesPages', 0, True, 0),),), 0)
+    elif filter_name == "writer_pdf_Export":
+     property = PropertyValue('FilterData', 0,
                        uno.Any('[]com.sun.star.beans.PropertyValue',
-                       (PropertyValue('SelectPdfVersion', 0, 1, 0),),), 0)
+                      (PropertyValue('ExportComments', 0, False, 0),),
+                      ), 0)
     elif filter_name in ("draw_html_Export", "HTML (StarCalc)"):
       property = PropertyValue('FilterData', 0,
                         uno.Any('[]com.sun.star.beans.PropertyValue',
@@ -242,9 +242,9 @@ class UnoDocument(object):
           continue
         property_value = getattr(container, property_name, '')
         if property_value:
-          if isinstance(property_value, basestring):
+          if isinstance(property_value, str):
             metadata[property_name] = property_value
-          elif isinstance(property_value, tuple) and isinstance(property_value[0], basestring):
+          elif isinstance(property_value, tuple) and isinstance(property_value[0], str):
             metadata[property_name] = property_value
           else:
             try:
@@ -277,14 +277,14 @@ class UnoDocument(object):
     document_properties = self.document_loaded.getDocumentProperties()
     user_defined_properties = document_properties.getUserDefinedProperties()
     new_properties = []
-    for prop, value in metadata.items():
+    for prop, value in list(metadata.items()):
       for container in [document_properties, user_defined_properties]:
         current_value = getattr(container, prop, None)
         if current_value is not None:
           if isinstance(current_value, tuple):
             if isinstance(value, list):
               value = tuple(value)
-            elif isinstance(value, basestring):
+            elif isinstance(value, str):
               # BBB: old ERP5 code sends Keywords as a string
               # separated by a whitespace.
               value = tuple(value.split(' '))
@@ -294,7 +294,7 @@ class UnoDocument(object):
       else:
         new_properties.append([prop, value])
     for prop, value in new_properties:
-      if isinstance(value, basestring):
+      if isinstance(value, str):
         user_defined_properties.addProperty(prop, 0, '')
         user_defined_properties.setPropertyValue(prop, value)
     self.document_loaded.store()
@@ -361,7 +361,7 @@ def main():
     elif opt == '--script':
       script = arg
 
-  service_manager = helper_util.getServiceManager(
+  service_manager = getServiceManager(
     hostname, port, uno_path, office_binary_path)
   unodocument = UnoDocument(service_manager, document_url,
     source_format, destination_format, infilter, refresh)

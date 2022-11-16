@@ -32,7 +32,7 @@
 import unittest
 import sys
 from os import environ, path, mkdir, putenv
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 from cloudooo.handler.ooo.application.openoffice import openoffice
 from cloudooo.handler.ooo.mimemapper import mimemapper
 

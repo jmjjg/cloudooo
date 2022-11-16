@@ -28,7 +28,7 @@
 #
 ##############################################################################
 
-from monitor import Monitor
+from .monitor import Monitor
 from multiprocessing import Process
 import psutil
 from cloudooo.util import logger

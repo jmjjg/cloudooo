@@ -39,7 +39,7 @@ from erp5.util.testsuite import SubprocessError
 from erp5.util import taskdistribution
 
 def _parsingErrorHandler(data, _):
-  print >> sys.stderr, 'Error parsing data:', repr(data)
+  print('Error parsing data:', repr(data), file=sys.stderr)
 taskdistribution.patchRPCParser(_parsingErrorHandler)
 
 class TestSuite(BaseTestSuite):
@@ -53,7 +53,7 @@ class TestSuite(BaseTestSuite):
                                    'runUnitTest')
       args = tuple(shlex.split(runUnitTest)) + args
       status_dict = self.spawn(*args, **kw)
-    except SubprocessError, e:
+    except SubprocessError as e:
       status_dict = e.status_dict
     test_log = status_dict['stderr']
     search = self.RUN_RE.search(test_log)
@@ -115,7 +115,7 @@ def run():
   if test_result is not None:
     assert revision == test_result.revision, (revision, test_result.revision)
     while suite.acquire():
-      test = test_result.start(suite.running.keys())
+      test = test_result.start(list(suite.running.keys()))
       if test is not None:
         suite.start(test.name, lambda status_dict, __test=test:
           __test.stop(**status_dict))

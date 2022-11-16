@@ -123,11 +123,11 @@ class TestCase(unittest.TestCase):
             success = False
             try:
                 self.setUp()
-            except SkipTest, e:
+            except SkipTest as e:
                 result.addSkip(self, str(e))
-            except SetupSiteError, e:
+            except SetupSiteError as e:
                 result.errors.append(None)
-            except BaseException, e:
+            except BaseException as e:
                 result.addError(self, sys.exc_info())
                 if isinstance(e, (KeyboardInterrupt, SystemExit)):
                     raise
@@ -136,13 +136,13 @@ class TestCase(unittest.TestCase):
                     testMethod()
                 except self.failureException:
                     result.addFailure(self, sys.exc_info())
-                except _ExpectedFailure, e:
+                except _ExpectedFailure as e:
                     result.addExpectedFailure(self, e.exc_info)
                 except _UnexpectedSuccess:
                     result.addUnexpectedSuccess(self)
-                except SkipTest, e:
+                except SkipTest as e:
                     result.addSkip(self, str(e))
-                except BaseException, e:
+                except BaseException as e:
                     result.addError(self, sys.exc_info())
                     if isinstance(e, (KeyboardInterrupt, SystemExit)):
                         raise
@@ -151,7 +151,7 @@ class TestCase(unittest.TestCase):
 
                 try:
                     self.tearDown()
-                except BaseException, e:
+                except BaseException as e:
                     result.addError(self, sys.exc_info())
                     if isinstance(e, (KeyboardInterrupt, SystemExit)):
                         raise
@@ -178,7 +178,7 @@ class TestCase(unittest.TestCase):
 
 if not hasattr(unittest.TestResult, 'addSkip'): # BBB: Python < 2.7
 
-    unittest.TestResult._orig_init__ = unittest.TestResult.__init__.im_func
+    unittest.TestResult._orig_init__ = unittest.TestResult.__init__.__func__
 
     def __init__(self):
         self._orig_init__()
@@ -237,7 +237,7 @@ class _TextTestResult(unittest._TextTestResult):
             self.stream.writeln()
         # 'None' correspond to redundant errors due to site creation errors,
         # and we do not display them here.
-        self.printErrorList('ERROR', filter(None, self.errors))
+        self.printErrorList('ERROR', [_f for _f in self.errors if _f])
         self.printErrorList('FAIL', self.failures)
         if self.unexpectedSuccesses:
           self.stream.writeln(self.separator1)
@@ -264,14 +264,14 @@ class TextTestRunner(unittest.TextTestRunner):
         self.stream.writeln("Ran %d test%s in %.3fs" %
                             (run, run != 1 and "s" or "", timeTaken))
         self.stream.writeln()
-        results = map(len, (result.expectedFailures,
+        results = list(map(len, (result.expectedFailures,
                             result.unexpectedSuccesses,
-                            result.skipped))
+                            result.skipped)))
         expectedFails, unexpectedSuccesses, skipped = results
         infos = []
         if not result.wasSuccessful():
             self.stream.write("FAILED")
-            failed, errored = map(len, (result.failures, result.errors))
+            failed, errored = list(map(len, (result.failures, result.errors)))
             if failed:
                 infos.append("failures=%d" % failed)
             if errored:

@@ -31,7 +31,7 @@
 import sys
 from multiprocessing import Process
 from os import listdir
-from xmlrpclib import ServerProxy
+from xmlrpc.client import ServerProxy
 from os.path import join
 from getopt import getopt, GetoptError
 from base64 import encodestring
@@ -120,7 +120,7 @@ class Client(Process):
           proxy.getChapterItemList(data, 'odt')
           proxy.getImageItemList(data, 'odt')
           self.log.msg("Success\n")
-        except Exception, err:
+        except Exception as err:
           self.log.msg("Error - %s\n"%str(err))
         self.number_of_request -= 1
     self.log.close()
@@ -131,15 +131,15 @@ def main():
   help_msg = "\nUse --help or -h"
   try:
     opt_list, arg_list = getopt(sys.argv[1:], "hc:n:f:s:l:", ["help"])
-  except GetoptError, msg:
+  except GetoptError as msg:
     msg = msg.msg + help_msg
-    print >> sys.stderr, msg
+    print(msg, file=sys.stderr)
     sys.exit(2)
 
   kw = {}
   for opt, arg in opt_list:
     if opt in ('-h', '--help'):
-      print >> sys.stdout, __doc__
+      print(__doc__, file=sys.stdout)
       sys.exit(2)
     elif opt == '-c':
       number_client = int(arg)

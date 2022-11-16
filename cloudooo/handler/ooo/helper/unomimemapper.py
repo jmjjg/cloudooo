@@ -34,7 +34,7 @@ try:
   import json
 except ImportError:
   import simplejson as json
-import helper_util
+from helper_util import getServiceManager
 from getopt import getopt, GetoptError
 
 # python3 support
@@ -70,7 +70,7 @@ class UnoMimemapper(object):
 
   def __init__(self, hostname, port, uno_path=None, office_binary_path=None):
     """ Receives hostname and port from openoffice and create a service manager"""
-    self.service_manager = helper_util.getServiceManager(hostname, port,
+    self.service_manager = getServiceManager(hostname, port,
                                                          uno_path,
                                                          office_binary_path)
 
@@ -84,7 +84,7 @@ class UnoMimemapper(object):
         for obj in iter(element_list):
             if obj.Name in ignore_name_list:
               continue
-            if not isinstance(obj.Value, (bool, int, long, basestring, tuple)):
+            if not isinstance(obj.Value, (bool, int, str, tuple)):
               continue
             element_dict[obj.Name] = obj.Value
             service_dict[name] = element_dict

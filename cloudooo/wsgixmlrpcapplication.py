@@ -12,7 +12,10 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from SimpleXMLRPCServer import SimpleXMLRPCDispatcher
+try:
+    from xmlrpc.server import SimpleXMLRPCDispatcher
+except NameError:
+    from SimpleXMLRPCServer import SimpleXMLRPCDispatcher
 
 
 class WSGIXMLRPCApplication(object):

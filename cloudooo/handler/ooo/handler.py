@@ -35,7 +35,7 @@ from base64 import decodestring, encodestring
 from os import environ, path
 from subprocess import Popen, PIPE
 from cloudooo.handler.ooo.application.openoffice import openoffice
-from zope.interface import implements
+from zope.interface import implementer
 from cloudooo.interfaces.handler import IHandler
 from cloudooo.handler.ooo.mimemapper import mimemapper
 from cloudooo.handler.ooo.document import FileSystemDocument
@@ -45,13 +45,13 @@ from cloudooo.util import logger, parseContentType, loadMimetypeList
 from psutil import pid_exists
 
 
+@implementer(IHandler)
 class Handler(object):
   """OOO Handler is used to access the one Document and OpenOffice.
   For each Document inputed is created on instance of this class to manipulate
   the document. This Document must be able to create and remove a temporary
   document at FS, load and export.
   """
-  implements(IHandler)
 
   enable_scripting = False
 
@@ -60,7 +60,7 @@ class Handler(object):
     self.zip = kw.get('zip', False)
     self.uno_path = kw.get("uno_path", None)
     self.office_binary_path = kw.get("office_binary_path", None)
-    self.timeout = kw.get("timeout", 600)
+    self.timeout = kw.get("timeout", 3600)
     self.refresh = kw.get('refresh', False)
     self.source_format = source_format
     if not self.uno_path:
@@ -76,9 +76,9 @@ class Handler(object):
       # backward compatibility.
       # The heuristic is "if it's not utf-8", let's assume it's iso-8859-15.
       try:
-        unicode(data, 'utf-8')
+        str(data, 'utf-8')
       except UnicodeDecodeError:
-        data = unicode(data, 'iso-8859-15').encode('utf-8')
+        data = str(data, 'iso-8859-15').encode('utf-8')
         logger.warn("csv data is not utf-8, assuming iso-8859-15")
     self.document = FileSystemDocument(
          base_folder_url,
@@ -99,7 +99,7 @@ class Handler(object):
                     '--document_url=%s' % self.document.getUrl()]
     for arg in args:
       command_list.insert(3, "--%s" % arg)
-    for k, v in kw.iteritems():
+    for k, v in kw.items():
       command_list.append("--%s=%s" % (k, v))
 
     return command_list

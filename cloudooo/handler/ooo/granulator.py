@@ -29,7 +29,7 @@
 ##############################################################################
 
 from zipfile import ZipFile
-from StringIO import StringIO
+from io import StringIO
 from lxml import etree
 from os import path
 from cloudooo.util import logger
@@ -126,7 +126,7 @@ class OOGranulator(object):
       odf_document.close()
       odf_document_as_string.seek(0)
       return odf_document_as_string.read()
-    except Exception, e:
+    except Exception as e:
       logger.error(e)
       return None
 
@@ -202,7 +202,7 @@ class OOGranulator(object):
     image_list = []
 
     for xml_image in xml_image_list:
-      id = xml_image.values()[0].split('/')[-1]
+      id = list(xml_image.values())[0].split('/')[-1]
       title = ''.join(xml_image.xpath(IMAGE_TITLE_XPATH_QUERY%(stylename_list[0], name_list[0], id),
                                       namespaces=xml_image.nsmap))
       if title != '':
@@ -250,7 +250,7 @@ class OOGranulator(object):
 
     text = ''.join(paragraph.itertext())
 
-    if TEXT_ATTRIB_STYLENAME not in paragraph.attrib.keys():
+    if TEXT_ATTRIB_STYLENAME not in list(paragraph.attrib.keys()):
       logger.error("Unable to find %s attribute at paragraph %s " % \
                               (TEXT_ATTRIB_STYLENAME, paragraph_id))
       return None

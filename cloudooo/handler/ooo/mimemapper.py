@@ -32,19 +32,22 @@ import pkg_resources
 from re import findall
 from subprocess import Popen, PIPE
 from subprocess import STDOUT
-from zope.interface import implements
-from filter import Filter
+from zope.interface import implementer
+from .filter import Filter
 from os import environ, path
 from cloudooo.interfaces.mimemapper import IMimemapper
-from types import InstanceType
+try:
+  from types import InstanceType
+except ImportError:
+  InstanceType = object
 import json
 
 
+@implementer(IMimemapper)
 class MimeMapper(object):
   """Load all filters from OOo. You can get the filter you want or all
   filters of the specific extension.
   """
-  implements(IMimemapper)
 
   def __init__(self):
     """When it is instantiated, it creates a structure to store filters.
@@ -64,7 +67,7 @@ class MimeMapper(object):
 
   def _typeToDocumentService(self, document_type):
     """Returns the document service according to document type."""
-    for k, v in self._document_type_dict.iteritems():
+    for k, v in self._document_type_dict.items():
       if k.startswith(document_type):
         return v
 
@@ -142,7 +145,7 @@ class MimeMapper(object):
         'Text', # Use 'Text - Choose Encoding' instead
         'Text (StarWriter/Web)', # Use 'Text - Choose Encoding (Writer/Web)' instead
     ]
-    for filter_name, value in filter_dict.iteritems():
+    for filter_name, value in filter_dict.items():
       if filter_name in ooo_disable_filter_list:
         continue
       ui_name = value.get('UIName')
@@ -229,7 +232,7 @@ class MimeMapper(object):
       'pdf': ['com.sun.star.drawing.DrawingDocument'],
       'xls': ['com.sun.star.sheet.SpreadsheetDocument'],
       })
-    self.document_service_list = self._extension_list_by_type.keys()
+    self.document_service_list = list(self._extension_list_by_type.keys())
     self._loaded = True
 
   def getFilterName(self, extension, document_service):

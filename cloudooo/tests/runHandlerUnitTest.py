@@ -5,7 +5,7 @@ from pkg_resources import resource_filename
 import unittest
 from time import sleep
 from subprocess import Popen
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 from argparse import ArgumentParser
 from os import chdir, path, environ, curdir, remove
 from cloudooo.tests import backportUnittest
@@ -34,7 +34,7 @@ def run():
   parser.add_argument('server_cloudooo_conf')
   parser.add_argument('test_name')
   parser.add_argument('--timeout_limit', dest='timeout_limit',
-                      type=long, default=30,
+                      type=int, default=30,
                       help="Timeout to waiting for the cloudooo stop")
   parser.add_argument('--paster_path', dest='paster_path',
                       default='paster',

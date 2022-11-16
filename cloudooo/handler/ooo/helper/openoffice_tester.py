@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-import helper_util
+from helper_util import getServiceManager
 from getopt import getopt
 
 def main():
@@ -18,7 +18,7 @@ def main():
     elif opt == "--office_binary_path":
       office_binary_path = arg
 
-  helper_util.getServiceManager(hostname, port, uno_path, office_binary_path)
+  getServiceManager(hostname, port, uno_path, office_binary_path)
 
 
 if __name__ == "__main__":

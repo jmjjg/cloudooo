@@ -30,7 +30,7 @@
 
 
 from zipfile import ZipFile
-from cStringIO import StringIO
+from io import StringIO
 from cloudooo.handler.x2t.handler import Handler
 from cloudooo.tests.handlerTestCase import HandlerTestCase
 
@@ -89,24 +89,24 @@ class TestHandler(HandlerTestCase):
   def testgetMetadata(self):
     """Test getMetadata from yformats"""
     handler = Handler(self.tmp_url, "", "xlsy", **self.kw)
-    self.assertEquals(handler.getMetadata(), {
-	u'CreationDate': u'00/00/0000 00:00:00',
-	u'ImplementationName': u'com.sun.star.comp.comphelper.OPropertyBag',
-	u'MIMEType': u'text/plain',
-	u'ModificationDate': u'00/00/0000 00:00:00',
-	u'PrintDate': u'00/00/0000 00:00:00',
-	u'TemplateDate': u'00/00/0000 00:00:00',
+    self.assertEqual(handler.getMetadata(), {
+	'CreationDate': '00/00/0000 00:00:00',
+	'ImplementationName': 'com.sun.star.comp.comphelper.OPropertyBag',
+	'MIMEType': 'text/plain',
+	'ModificationDate': '00/00/0000 00:00:00',
+	'PrintDate': '00/00/0000 00:00:00',
+	'TemplateDate': '00/00/0000 00:00:00',
 	})
     handler = Handler(self.tmp_url, open("data/test_with_metadata.xlsy").read(), "xlsy", **self.kw)
-    self.assertEquals(handler.getMetadata(), {
-        u'CreationDate': u'31/01/2018 21:09:10',
-        u'Keywords': [u'\u0442\u0435\u0441\u0442', u'\u0441\u0430\u0431\u0436\u0435\u043a\u0442'],
+    self.assertEqual(handler.getMetadata(), {
+        'CreationDate': '31/01/2018 21:09:10',
+        'Keywords': ['\u0442\u0435\u0441\u0442', '\u0441\u0430\u0431\u0436\u0435\u043a\u0442'],
         'MIMEType': 'application/x-asc-spreadsheet',
-        u'ModificationDate': u'31/01/2018 21:22:36',
-        u'PrintDate': u'00/00/0000 00:00:00',
-        u'Subject': u'\u0432\u044b\u043a\u043b\u044e\u0447\u0438 \u0442\u0435\u043b\u0435\u0432\u0438\u0437\u043e\u0440',
-        u'TemplateDate': u'00/00/0000 00:00:00',
-        u'Title': u'kesha'})
+        'ModificationDate': '31/01/2018 21:22:36',
+        'PrintDate': '00/00/0000 00:00:00',
+        'Subject': '\u0432\u044b\u043a\u043b\u044e\u0447\u0438 \u0442\u0435\u043b\u0435\u0432\u0438\u0437\u043e\u0440',
+        'TemplateDate': '00/00/0000 00:00:00',
+        'Title': 'kesha'})
 
   def testsetMetadata(self):
     """Test setMetadata for yformats"""
@@ -117,7 +117,7 @@ class TestHandler(HandlerTestCase):
             "Keywords": "test keywords",
            })
     handler = Handler(self.tmp_url, new_mime_data, "xlsy", **self.kw)
-    self.assertEquals(handler.getMetadata(), {u'Keywords': u'test keywords', 'MIMEType': 'application/x-asc-spreadsheet', u'Title': u'test title', u'Subject': u'test subject'})
+    self.assertEqual(handler.getMetadata(), {'Keywords': 'test keywords', 'MIMEType': 'application/x-asc-spreadsheet', 'Title': 'test title', 'Subject': 'test subject'})
 
   def testGetAllowedConversionFormatList(self):
     """Test all combination of mimetype
@@ -125,13 +125,13 @@ class TestHandler(HandlerTestCase):
     None of the types below define any mimetype parameter to not ignore so far.
     """
     get = Handler.getAllowedConversionFormatList
-    self.assertEquals(get("application/x-asc-text;ignored=param"),
+    self.assertEqual(get("application/x-asc-text;ignored=param"),
       [("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "Word 2007 Document"),
        ('application/vnd.oasis.opendocument.text', 'ODF Text Document')])
-    self.assertEquals(get("application/x-asc-spreadsheet;ignored=param"),
+    self.assertEqual(get("application/x-asc-spreadsheet;ignored=param"),
       [("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Excel 2007 Spreadsheet"),
 	('application/vnd.oasis.opendocument.spreadsheet', 'ODF Spreadsheet Document')])
-    self.assertEquals(get("application/x-asc-presentation;ignored=param"),
+    self.assertEqual(get("application/x-asc-presentation;ignored=param"),
       [("application/vnd.openxmlformats-officedocument.presentationml.presentation", "PowerPoint 2007 Presentation"),
 	('application/vnd.oasis.opendocument.presentation', 'ODF Presentation Document')])
 

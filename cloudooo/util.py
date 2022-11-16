@@ -32,8 +32,7 @@ import logging
 import mimetypes
 import pkg_resources
 import os
-import mimetools
-import cStringIO
+import io
 from zipfile import ZipFile, ZIP_DEFLATED
 
 logger = logging.getLogger('Cloudooo')
@@ -139,4 +138,4 @@ def parseContentType(content_type):
       parsed_content_type.getparam('charset')  -> 'utf-8'
       parsed_content_type.typeheader  -> 'text/plain;charset="utf-8"'
   """
-  return mimetools.Message(cStringIO.StringIO("Content-Type:" + content_type.replace("\r\n", "\r\n\t")))
+  return "Content-Type: {}".format(content_type.replace("\r\n", "\r\n\t"))
