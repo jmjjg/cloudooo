@@ -1,11 +1,13 @@
 FROM ubuntu:20.04
 
-RUN apt update \
-    && apt install -y \
+SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
+
+RUN apt-get update \
+    && apt-get install --assume-yes \
         software-properties-common=0.99.9.8 \
-    && add-apt-repository ppa:libreoffice/libreoffice-7-0 -y \
+    && add-apt-repository ppa:libreoffice/libreoffice-7-0 --yes \
     && echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections \
-    && apt install -y \
+    && apt-get install --assume-yes \
         libcairo2=1.16.0-4ubuntu1 \
         libcups2=2.3.1-9ubuntu1.2 \
         libgl1-mesa-dev=21.2.6-0ubuntu0.1~20.04.2 \
@@ -27,14 +29,20 @@ RUN apt update \
         python2.7-dev=2.7.18-1~20.04.3 \
         ttf-mscorefonts-installer=3.7ubuntu6 \
         wget=1.20.3-1ubuntu2 \
-    && rm -r /var/lib/apt/lists/* \
-    && ln -s /usr/bin/python3 /usr/lib/libreoffice/program/python
+    && rm --recursive /var/lib/apt/lists/* \
+    && ln --symbolic /usr/bin/python3 /usr/lib/libreoffice/program/python
 
 COPY . /opt/cloudooo
 COPY ./docker/etc/cloudooo.conf /etc/cloudooo.conf
 
 WORKDIR /opt/cloudooo/
 
-RUN python2 setup.py install
+#RUN python2 setup.py install
+RUN wget https://bootstrap.pypa.io/pip/2.7/get-pip.py --output-document /tmp/get-pip.py --quiet \
+    && python2 /tmp/get-pip.py \
+    && rm /tmp/get-pip.py \
+    && pip install --no-cache-dir --requirement requirements.txt
 
-CMD /usr/local/bin/paster serve /etc/cloudooo.conf --daemon --pid-file /var/run/cloudooo.pid --log-file=/var/log/cloudooo.log && tail -f /var/log/cloudooo.log
+EXPOSE 8011
+
+CMD ["/bin/bash", "-eou", "pipefail", "-c", "/usr/local/bin/paster serve /etc/cloudooo.conf --daemon --pid-file /var/run/cloudooo.pid --log-file=/var/log/cloudooo.log && tail -f /var/log/cloudooo.log"]

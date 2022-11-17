@@ -1,0 +1,12 @@
+argparse==1.2.1
+erp5.util==0.4.70
+lxml==4.6.2
+Paste==3.5.0
+PasteDeploy==2.1.1
+PasteScript==3.2.1
+psutil==5.5.1
+pyPdf==1.13
+python-magic==0.4.24
+WSGIserver==1.3
+WSGIUtils==0.7.2
+zope.interface==5.2.0
